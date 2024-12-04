@@ -1,15 +1,18 @@
-use std::io::{BufRead, BufReader};
+use std::io::{BufReader, BufRead};
 use std::fs::File;
 use std::env;
 use std::path::Path;
 use std::str::FromStr;
 
-fn day_1() {
-    let mut current_dir = env::current_dir().expect("Current directory is invalid or cannot be accessed").into_os_string();
-    let file_path = "data/day_1";
+fn load_data_file(day: u8) -> BufReader<File> {
+    let current_dir = env::current_dir().expect("Current directory is invalid or cannot be accessed").into_os_string();
+    let file_path = format!("data/day_{}", day);
     let data_dir = Path::new(&current_dir).join(file_path);
-    
-    let file_reader = BufReader::new(File::open(data_dir).expect("Cannot open day 1 data file"));
+    BufReader::new(File::open(data_dir).expect(format!("Cannot open day {} data file", day).as_str()))
+}
+
+fn day_1() {
+    let file_reader = load_data_file(1); 
 
     let mut list_1 = Vec::new(); 
     let mut list_2 = Vec::new(); 
