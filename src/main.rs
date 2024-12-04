@@ -31,7 +31,7 @@ fn day_1(file_reader: BufReader<File>) -> (u32, u32) {
     println!("{}", total_diff);
 
     // Part 2
-    let mut uniques = list_1.clone();
+    let uniques = list_1.clone();
     let total_similarity: u32 = uniques.iter().map(|unique| unique * <usize as TryInto<u32>>::try_into(list_2.iter().filter(
             |&item| *item == *unique
         ).count()).unwrap()
