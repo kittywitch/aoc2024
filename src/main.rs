@@ -26,24 +26,19 @@ fn day_1() {
     list_1.sort();
     list_2.sort();
 
-    let mut uniques = list_1.clone();
-    uniques.dedup();
     let zipped_list = list_1.iter().zip(list_2.iter());
 
     // Part 1 
-    let mut total_diff: u32 = 0;
-    for (a, b) in zipped_list {
-        total_diff += a.abs_diff(*b); 
-    }
+    let total_diff = zipped_list.fold(0, |acc, item| acc + item.0.abs_diff(*item.1));
     println!("{}", total_diff);
 
     // Part 2
-    let mut total_similarity: u32 = 0;
-    for unique in uniques {
-        let occurences: u32 = list_2.iter().filter(|&item| *item == unique).count().try_into().unwrap();
-        total_similarity += unique * occurences
-    }
-
+    let mut uniques = list_1.clone();
+    uniques.dedup();
+    let total_similarity: u32 = uniques.iter().map(|unique| unique * <usize as TryInto<u32>>::try_into(list_2.iter().filter(
+            |&item| *item == *unique
+        ).count()).unwrap()
+    ).sum();
     println!("{}", total_similarity);
 }
 
