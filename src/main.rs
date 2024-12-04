@@ -29,7 +29,7 @@ fn day_1() {
     let zipped_list = list_1.iter().zip(list_2.iter());
 
     // Part 1 
-    let total_diff = zipped_list.fold(0, |acc, item| acc + item.0.abs_diff(*item.1));
+    let total_diff: u32 = zipped_list.map(|item| item.0.abs_diff(*item.1)).sum();
     println!("{}", total_diff);
 
     // Part 2
