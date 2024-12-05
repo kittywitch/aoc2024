@@ -17,7 +17,7 @@ enum Token {
     Mult(u32, u32),
 }
 
-fn multiplier(input: &str) -> IResult<&str, Vec<Option<Token>>>{
+fn lexer(input: &str) -> IResult<&str, Vec<Option<Token>>>{
     let pair = separated_pair(digit1, tag(","), digit1);
     let mut proper_tag = delimited(tag("mul("), pair, tag(")"));
     (many0(alt(
@@ -32,7 +32,7 @@ fn multiplier(input: &str) -> IResult<&str, Vec<Option<Token>>>{
 }
 
 fn parser(input: &str, enable_try: bool) -> u32 {
-    let (input, mult_tuples) = multiplier(&input).unwrap();
+    let (input, mult_tuples) = lexer(&input).unwrap();
     mult_tuples.into_iter().filter_map(|x| x).scan((true, 0), |(st, total), elem|
         match elem {
             Token::Do => {
