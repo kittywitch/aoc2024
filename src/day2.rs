@@ -1,6 +1,7 @@
 use std::io::{BufReader, BufRead};
 use std::fs::File;
 use std::str::FromStr;
+use std::cmp;
 
 fn safe_layer_1(i: i32, j: i32) -> (bool, i32) {
     let difference = i-j;
@@ -41,32 +42,34 @@ fn safety_check(levels: &Vec<i32>, accepted_failures: usize) -> bool {
         ).count() == 0 
     } else { 
         // take a copy of the levels so that we can remove the faulty index from itt
-        let mut copied_levels = levels.clone();
-        let mut diffs = 1000;
-        let mut signs = 1000;
-        // find the first element that fails the difference magnitude check
-        let diffs_check = differences.iter().find(|(index, (diff, sign))|
+        // find the elements that fail diff check
+        let diffs_check = differences.iter().filter(|(index, (diff, sign))|
             !*diff
         );
-        // turn that Option into an index, plus increase it by 1 because that targets the correct index based upon the window position
-        if let Some((index, _)) = diffs_check { diffs = index+1; }
-        // find the first element that fails the difference sign check
-        let signs_check = directions.iter().find(|(index, (diff, sign))|           
+        // find the elements that fail sign check
+        let signs_check = directions.iter().filter(|(index, (diff, sign))|           
             !*sign
         );
-        // turn that Option into an index, plus increase it by 1 because that targets the correct index based upon the window position
-        if let Some((index, _)) = signs_check { signs = index+1; }
-        // the index to remove is the smaller of the two
-        let index_to_remove = diffs.min(signs);
-        dbg!(failures, diffs, signs, index_to_remove);
-        dbg!(&levels);
-        // remove that index
-        copied_levels.remove(index_to_remove);
-        dbg!(&copied_levels);
-        // run the safety check again, this time with one less accepted failure since we've removed that failure
-        let fixed = safety_check(&copied_levels, accepted_failures-1);
-        dbg!(fixed);
-        fixed
+
+        let diffs = diffs_check.map(|&(index, (_, _))|
+            (index, index+2)
+        );
+        let signs = signs_check.map(|&(index, (_, _))|
+            (index-1, index+2)
+        );
+        let (_, max) = diffs.clone().chain(signs.clone()).max_by_key(|(_min,max)|
+            *max
+        ).unwrap();
+        let (min, _) = diffs.chain(signs).min_by_key(|(min,_max)|
+            *min
+        ).unwrap();
+        let mut attempts = Vec::new();
+        for i in min..max {
+            let mut copied_levels = levels.clone();
+            copied_levels.remove(i);
+            attempts.push(safety_check(&copied_levels, accepted_failures-1));
+        }
+        attempts.iter().any(|x| *x) 
     }
 }
 
