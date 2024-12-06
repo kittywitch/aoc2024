@@ -92,10 +92,6 @@ impl Coordinate {
     }
 }
 
-
-
-
-
 struct WordSearcher<'a> {
     current_pos: Coordinate,
     cursor: Coordinate,
