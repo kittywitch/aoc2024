@@ -5,14 +5,16 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 
 use day1::day_1;
 use day2::day_2;
 use day3::day_3;
 use day4::day_4;
+use day5::day_5;
 
 fn main() {
-    let day = 4;
+    let day = 5;
 
     match day {
         1 => {
@@ -61,6 +63,16 @@ fn main() {
             let (day_4_part_1, day_4_part_2) = day_4(file_reader_4);
             
             println!("4: {} {}", day_4_part_1, day_4_part_2)
+        },
+        5 => {
+            let file_reader_5_test = load_data_file("5_test");
+            let (day_5_test_part_1, day_5_test_part_2) = day_5(file_reader_5_test);
+            println!("5_test: {} {}", day_5_test_part_1, day_5_test_part_2);
+            
+            let file_reader_5 = load_data_file("5");
+            let (day_5_part_1, day_5_part_2) = day_5(file_reader_5);
+            
+            println!("5: {} {}", day_5_part_1, day_5_part_2)
         },
         _ => {
             todo!()
