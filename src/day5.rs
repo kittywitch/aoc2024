@@ -87,7 +87,5 @@ pub fn day_5(file_reader: BufReader<File>) -> (u32, u32) {
         corrected_middles.push(update[middle_index]);
     }
 
-    dbg!(&corrected_middles);
-    
     return (middles.into_iter().sum::<u32>(), corrected_middles.into_iter().sum::<u32>())
 }
