@@ -21,6 +21,11 @@ impl Direction {
         static DIRECTIONS: [Direction; 8] = [Direction::North, Direction::NorthEast, Direction::East, Direction::SouthEast, Direction::South, Direction::SouthWest, Direction::West, Direction::NorthWest];
         DIRECTIONS.iter()
     }
+    
+    pub fn diagonals() -> Iter<'static, Direction> {
+        static DIRECTIONS: [Direction; 4] = [Direction::NorthEast, Direction::SouthEast, Direction::SouthWest, Direction::NorthWest];
+        DIRECTIONS.iter()
+    }
 
     pub fn opposite(self) -> Direction {
         match self {
@@ -149,6 +154,42 @@ impl WordSearcher<'_> {
     }
 }
 
+pub fn find_xmas(matrix: Vec<Vec<char>>) -> u32 {
+    let matrix_height: usize = matrix.len().try_into().unwrap(); 
+    let matrix_width: usize = matrix[0].len().try_into().unwrap();
+    let mut xmases = 0;
+
+    for (x,line) in matrix.iter().enumerate() {
+        for (y,ychar) in line.iter().enumerate() {
+            let mut adjacencies = 0;
+            let current_pos = Coordinate { x: x, y: y };
+            let pivot = 'A';
+            if *ychar == pivot {
+                for dir in Direction::diagonals() {
+                    let cursor = Coordinate {x: x, y: y}.move_dir(*dir, matrix_height, matrix_width);
+                    if cursor.is_some() {
+                        let cursor_1 = cursor.unwrap();
+                        let opposite = dir.opposite();
+                        let other_cursor = Coordinate {x: x, y: y}.move_dir(opposite, matrix_height, matrix_width);
+                        if other_cursor.is_some() {
+                            let cursor_2 = other_cursor.unwrap();
+                            if matrix[cursor_1.x][cursor_1.y] == 'M' {
+                                if matrix[cursor_2.x][cursor_2.y] == 'S' {
+                                adjacencies += 1; 
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if adjacencies == 2 {
+                xmases += 1;
+            };
+        }
+    }
+    xmases
+}
+
 pub fn day_4(file_reader: BufReader<File>) -> (usize, u32) {
     let mut matrix: Vec<Vec<char>> = Vec::new();
     for line in file_reader.lines() {
@@ -158,8 +199,9 @@ pub fn day_4(file_reader: BufReader<File>) -> (usize, u32) {
         }
         matrix.push(matrix_line);
     }
-    let mut wordsearcher = WordSearcher::new(matrix); 
+    let mut wordsearcher = WordSearcher::new(matrix.clone()); 
     let mut result = wordsearcher.begin();
-    dbg!(&result);
-    return (result.len(),0)
+    
+    let mew = find_xmas(matrix);
+    return (result.len(),mew)
 }
