@@ -112,7 +112,7 @@ pub fn pathing_loopy(objects: HashMap<Coordinate, String>, matrix_height: usize,
         let mut next_space = None;
         while player.is_some() {
             next_space = player.unwrap().move_dir(direction.unwrap(), matrix_height, matrix_width);
-            if visited.insert((player.unwrap(), direction.unwrap())) {
+            if !visited.insert((player.unwrap(), direction.unwrap())) {
                 return true
             }
             if next_space.is_some() {
