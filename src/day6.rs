@@ -82,13 +82,13 @@ pub fn pathing2(objects: HashMap<Coordinate, String>, matrix_height: usize, matr
 
     'outer: for (tile, dir) in tiles {
         let mut objects_copy = objects.clone();
-        if objects_copy.contains_key(&Coordinate {x: tile.x, y: tile.y}) {
+        if !objects_copy.contains_key(&Coordinate {x: tile.x, y: tile.y}) {
+            objects_copy.insert(Coordinate { x: tile.x, y: tile.y }, '#'.to_string());
             let loopy = pathing_loopy(objects_copy, matrix_height, matrix_width);
             if loopy {
                 loop_hits += 1;
             }
         } else {
-            objects_copy.insert(Coordinate { x: tile.x, y: tile.y }, '#'.to_string());
         }
     }
 
