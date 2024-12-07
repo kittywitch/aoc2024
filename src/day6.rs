@@ -79,8 +79,9 @@ pub fn pathing2(objects: HashMap<Coordinate, String>, matrix_height: usize, matr
     let mut checkpoint: (Option<Direction>, Option<Coordinate>) = (direction, player);
     let mut loop_hits = 0;
     let mut tiles = pathing(objects.clone(), matrix_height, matrix_width);
+    let tiles_set: HashSet<Coordinate> = HashSet::from_iter(tiles.iter().map(|x| x.0));
 
-    'outer: for (tile, dir) in tiles {
+    'outer: for tile in tiles_set {
         let mut objects_copy = objects.clone();
         if !objects_copy.contains_key(&Coordinate {x: tile.x, y: tile.y}) {
             objects_copy.insert(Coordinate { x: tile.x, y: tile.y }, '#'.to_string());
