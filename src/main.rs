@@ -81,10 +81,13 @@ fn main() {
             let (day_6_test_part_1, day_6_test_part_2) = day_6(file_reader_6_test);
             println!("6_test: {} {}", day_6_test_part_1, day_6_test_part_2);
             assert!(day_6_test_part_1 == 41);
+            assert!(day_6_test_part_2 == 6);
+            
             
             let file_reader_6 = load_data_file("6");
             let (day_6_part_1, day_6_part_2) = day_6(file_reader_6);
             println!("6: {} {}", day_6_part_1, day_6_part_2);
+            
         },
         _ => {
             todo!()
