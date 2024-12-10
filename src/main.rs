@@ -8,6 +8,7 @@ mod day4;
 mod day5;
 mod day6;
 mod day7;
+mod day8;
 
 use day1::day_1;
 use day2::day_2;
@@ -16,9 +17,10 @@ use day4::day_4;
 use day5::day_5;
 use day6::day_6;
 use day7::day_7;
+use day8::day_8;
 
 fn main() {
-    let day = 7;
+    let day = 8;
 
     match day {
         1 => {
@@ -84,12 +86,10 @@ fn main() {
             println!("6_test: {} {}", day_6_test_part_1, day_6_test_part_2);
             assert!(day_6_test_part_1 == 41);
             assert!(day_6_test_part_2 == 6);
-            
-            
+                        
             let file_reader_6 = load_data_file("6");
             let (day_6_part_1, day_6_part_2) = day_6(file_reader_6);
             println!("6: {} {}", day_6_part_1, day_6_part_2);
-            
         },
         7 => {
             let file_reader_7_test = load_data_file("7_test");
@@ -100,7 +100,15 @@ fn main() {
             let file_reader_7 = load_data_file("7");
             let (day_7_part_1, day_7_part_2) = day_7(file_reader_7);
             println!("7: {} {}", day_7_part_1, day_7_part_2);
-            
+        },
+        8 => {
+            let file_reader_8_test = load_data_file("8_test");
+            let (day_8_test_part_1, day_8_test_part_2) = day_8(file_reader_8_test);
+            println!("8_test: {} {}", day_8_test_part_1, day_8_test_part_2);
+
+            let file_reader_8 = load_data_file("8");
+            let (day_8_part_1, day_8_part_2) = day_8(file_reader_8);
+            println!("8: {} {}", day_8_part_1, day_8_part_2);
         },
         _ => {
             todo!()
