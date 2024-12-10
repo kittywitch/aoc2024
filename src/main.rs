@@ -7,6 +7,7 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
+mod day7;
 
 use day1::day_1;
 use day2::day_2;
@@ -14,9 +15,10 @@ use day3::day_3;
 use day4::day_4;
 use day5::day_5;
 use day6::day_6;
+use day7::day_7;
 
 fn main() {
-    let day = 6;
+    let day = 7;
 
     match day {
         1 => {
@@ -87,6 +89,17 @@ fn main() {
             let file_reader_6 = load_data_file("6");
             let (day_6_part_1, day_6_part_2) = day_6(file_reader_6);
             println!("6: {} {}", day_6_part_1, day_6_part_2);
+            
+        },
+        7 => {
+            let file_reader_7_test = load_data_file("7_test");
+            let (day_7_test_part_1, day_7_test_part_2) = day_7(file_reader_7_test);
+            println!("7_test: {} {}", day_7_test_part_1, day_7_test_part_2);
+            assert!(day_7_test_part_1 == 3749);
+            
+            let file_reader_7 = load_data_file("7");
+            let (day_7_part_1, day_7_part_2) = day_7(file_reader_7);
+            println!("7: {} {}", day_7_part_1, day_7_part_2);
             
         },
         _ => {
