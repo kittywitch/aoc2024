@@ -11,6 +11,77 @@ struct Coordinate {
     y: usize,
 }
 
+pub fn propagation(antennas: HashMap<String, Vec<Coordinate>>, matrix_width: usize, matrix_height: usize, propagate: bool) -> HashSet<Coordinate> {
+    let mut antinodes: HashSet<Coordinate> = HashSet::new();
+    for (antenna_type, locations) in antennas.clone().into_iter() {
+        let antenna_pairs: Vec<Vec<Coordinate>> = repeat_n(locations.into_iter(), 2)
+            .multi_cartesian_product()
+            .dedup()
+            .collect();
+
+
+        for antenna_pair in antenna_pairs {
+            let antenna_0_x = isize::try_from(antenna_pair[0].x).ok().unwrap();
+            let antenna_0_y = isize::try_from(antenna_pair[0].y).ok().unwrap();
+            let antenna_1_x = isize::try_from(antenna_pair[1].x).ok().unwrap();
+            let antenna_1_y = isize::try_from(antenna_pair[1].y).ok().unwrap();
+            let mut distance_x: isize = 0;
+            let mut distance_y: isize = 0;
+            distance_x = antenna_1_x - antenna_0_x;
+            distance_y = antenna_1_y - antenna_0_y;
+            let mut antinode_0_x = antenna_0_x - distance_x;
+            let mut antinode_0_y = antenna_0_y - distance_y;
+            let mut antinode_1_x = antenna_1_x + distance_x;
+            let mut antinode_1_y = antenna_1_y + distance_y;
+            let mut antinode_0_x_opt = usize::try_from(antinode_0_x);
+            let mut antinode_0_y_opt = usize::try_from(antinode_0_y);
+            let mut antinode_1_x_opt = usize::try_from(antinode_1_x);
+            let mut antinode_1_y_opt = usize::try_from(antinode_1_y);
+            if propagate {
+                while antinode_0_x_opt.is_ok() && antinode_0_x_opt.unwrap() < matrix_width &&
+                    antinode_0_y_opt.is_ok() && antinode_0_y_opt.unwrap() < matrix_height {
+                    antinodes.insert(Coordinate { x: antinode_0_x_opt.unwrap(), y: antinode_0_y_opt.unwrap() });
+                        if antinode_0_x_opt.unwrap() == antenna_pair[1].x || antinode_0_y_opt.unwrap() == antenna_pair[1].y {
+                            break
+                        }
+
+                    antinode_0_x -= distance_x;
+                    antinode_0_y -= distance_y;
+
+                    antinode_0_x_opt = usize::try_from(antinode_0_x);
+                    antinode_0_y_opt = usize::try_from(antinode_0_y);
+                }
+                while antinode_1_x_opt.is_ok() && antinode_1_x_opt.unwrap() < matrix_width
+                    && antinode_1_y_opt.is_ok() && antinode_1_y_opt.unwrap() < matrix_height {
+                    antinodes.insert(Coordinate { x: antinode_1_x_opt.unwrap(), y: antinode_1_y_opt.unwrap() });
+                        if antinode_1_x_opt.unwrap() == antenna_pair[0].x || antinode_1_y_opt.unwrap() == antenna_pair[0].y {
+                            break
+                        }
+                    
+                    antinode_1_x -= distance_x;
+                    antinode_1_y -= distance_y;
+
+                    antinode_1_x_opt = usize::try_from(antinode_1_x);
+                    antinode_1_y_opt = usize::try_from(antinode_1_y);
+                }
+
+            } else {
+                if antinode_0_x_opt.is_ok() && antinode_0_x_opt.unwrap() < matrix_width &&
+                    antinode_0_y_opt.is_ok() && antinode_0_y_opt.unwrap() < matrix_height
+                    && antinode_0_x_opt.unwrap() != antenna_pair[0].x && antinode_0_y_opt.unwrap() != antenna_pair[0].y {
+                    antinodes.insert(Coordinate { x: antinode_0_x_opt.unwrap(), y: antinode_0_y_opt.unwrap() });
+                }
+                if antinode_1_x_opt.is_ok() && antinode_1_x_opt.unwrap() < matrix_width
+                    && antinode_1_y_opt.is_ok() && antinode_1_y_opt.unwrap() < matrix_height
+                    && antinode_1_x_opt.unwrap() != antenna_pair[1].x && antinode_1_y_opt.unwrap() != antenna_pair[1].y{
+                    antinodes.insert(Coordinate { x: antinode_1_x_opt.unwrap(), y: antinode_1_y_opt.unwrap() });
+                }
+            }
+        }
+    }
+    return antinodes
+}
+
 pub fn day_8(file_reader: BufReader<File>) -> (usize, usize) {
     let mut matrix: Vec<Vec<char>> = Vec::new();
     for line in file_reader.lines() {
@@ -45,56 +116,27 @@ pub fn day_8(file_reader: BufReader<File>) -> (usize, usize) {
         }
     }
 
-    let processed: HashSet<Coordinate> = HashSet::new();
-    let mut antinodes: HashSet<Coordinate> = HashSet::new();
-    for (antenna_type, locations) in antennas.clone().into_iter() {
-        let antenna_pairs: Vec<Vec<Coordinate>> = repeat_n(locations.into_iter(), 2)
-            .multi_cartesian_product()
-            .dedup()
-            .collect();
 
-        for antenna_pair in antenna_pairs {
-            let antenna_0_x = isize::try_from(antenna_pair[0].x).ok().unwrap();
-            let antenna_0_y = isize::try_from(antenna_pair[0].y).ok().unwrap();
-            let antenna_1_x = isize::try_from(antenna_pair[1].x).ok().unwrap();
-            let antenna_1_y = isize::try_from(antenna_pair[1].y).ok().unwrap();
-
-            let distance_x = antenna_1_x - antenna_0_x;
-            let distance_y = antenna_1_y - antenna_0_y;
-
-            let antinode_0_x = antenna_0_x - distance_x;
-            let antinode_0_y = antenna_0_y - distance_y;
-            let antinode_1_x = antenna_1_x + distance_x;
-            let antinode_1_y = antenna_1_y + distance_y;
-
-            let antinode_0_x_opt = usize::try_from(antinode_0_x);
-            let antinode_0_y_opt = usize::try_from(antinode_0_y);
-            let antinode_1_x_opt = usize::try_from(antinode_1_x);
-            let antinode_1_y_opt = usize::try_from(antinode_1_y);
-
-            if antinode_0_x_opt.is_ok() && antinode_0_x_opt.unwrap() < matrix_width &&
-                antinode_0_y_opt.is_ok() && antinode_0_y_opt.unwrap() < matrix_height
-                 && antinode_0_x_opt.unwrap() != antenna_pair[0].x && antinode_0_y_opt.unwrap() != antenna_pair[0].y {
-                dbg!(&antinode_0_x_opt, &antinode_0_y_opt);
-                antinodes.insert(Coordinate { x: antinode_0_x_opt.unwrap(), y: antinode_0_y_opt.unwrap() });
-            }
-            if antinode_1_x_opt.is_ok() && antinode_1_x_opt.unwrap() < matrix_width
-                && antinode_1_y_opt.is_ok() && antinode_1_y_opt.unwrap() < matrix_height
-                 && antinode_1_x_opt.unwrap() != antenna_pair[1].x && antinode_1_y_opt.unwrap() != antenna_pair[1].y{
-                dbg!(&antinode_1_x_opt, &antinode_1_y_opt);
-                antinodes.insert(Coordinate { x: antinode_1_x_opt.unwrap(), y: antinode_1_y_opt.unwrap() });
-            }
-        }
-    }
-
+    let antinodes_p1 = propagation(antennas.clone(), matrix_width, matrix_height, false);
     let mut new_matrix = matrix.clone();
-    for antinode in &antinodes {
+    for antinode in &antinodes_p1 {
         new_matrix[antinode.x][antinode.y] = '#';
     }
-
     for column in new_matrix {
-        print!("{}\n", column.into_iter().collect::<String>());
+        println!("{}", column.into_iter().collect::<String>());
     }
+    println!("");
+    
+    let antinodes_p2 = propagation(antennas, matrix_width, matrix_height, true);
+    let mut new_matrix_p2 = matrix.clone();
+    for antinode in &antinodes_p2 {
+        new_matrix_p2[antinode.x][antinode.y] = '#';
+    }
+    for column in new_matrix_p2 {
+        println!("{}", column.into_iter().collect::<String>());
+    }
+    println!("");
 
-    return (antinodes.len(), 0)
+
+    return (antinodes_p1.len(), antinodes_p2.len())
 }
